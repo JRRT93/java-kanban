@@ -1,9 +1,11 @@
 package testing;
 
+import utilityClasses.TaskStatus;
+
 public class InputTask {
     protected String taskName;
     protected String description;
-    protected String status;
+    protected TaskStatus status;
     protected int identifier;
 
     InputTask(String taskName, String description) {
@@ -27,11 +29,11 @@ public class InputTask {
         this.description = description;
     }
 
-    public String getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 

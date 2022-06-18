@@ -3,6 +3,7 @@ package testing;
 import taskManager.Task;
 import taskManager.EpicTask;
 import taskManager.SubTask;
+import utilityClasses.TaskStatus;
 
 import java.util.Map;
 import java.util.Random;
@@ -21,7 +22,7 @@ public class InputTaskCreator {
     }
 
     public void putSubTaskInEpic(InputSubTask inputSubTask, InputTaskEpic inputTaskEpic) {
-        inputTaskEpic.listOfSubTasks.put(inputSubTask.getTaskName(), inputSubTask);
+        inputTaskEpic.listOfRelatedSubTasks.put(inputSubTask.getTaskName(), inputSubTask);
     }
 
     public InputTask updateTask(Task backendTask) {
@@ -32,9 +33,9 @@ public class InputTaskCreator {
         inputTask.setDescription("UPDATED! " + backendTask.getDescription());
         int randomUpdate = random.nextInt(2);
         if (randomUpdate == 0) {
-            inputTask.setStatus("IN_PROGRESS");
+            inputTask.setStatus(TaskStatus.IN_PROGRESS);
         } else {
-            inputTask.setStatus("DONE");
+            inputTask.setStatus(TaskStatus.DONE);
         }
         return inputTask;
     }
@@ -45,7 +46,7 @@ public class InputTaskCreator {
         inputTaskEpic.setTaskName("UPDATED! " + backendEpicTask.getTaskName());
         inputTaskEpic.setDescription("UPDATED! " + backendEpicTask.getDescription());
         for (Map.Entry<String, SubTask> entry : backendEpicTask.getListOfRelatedSubTasks().entrySet()) {
-            inputTaskEpic.listOfSubTasks.put(entry.getKey(), updateSubTask(entry.getValue(), inputTaskEpic));
+            inputTaskEpic.listOfRelatedSubTasks.put(entry.getKey(), updateSubTask(entry.getValue(), inputTaskEpic));
         }
         return inputTaskEpic;
     }
@@ -59,9 +60,9 @@ public class InputTaskCreator {
         inputSubTask.setDescription("UPDATED! " + backendSubTask.getDescription());
         int randomUpdate = random.nextInt(2);
         if (randomUpdate == 0) {
-            inputSubTask.setStatus("IN_PROGRESS");
+            inputSubTask.setStatus(TaskStatus.IN_PROGRESS);
         } else {
-            inputSubTask.setStatus("DONE");
+            inputSubTask.setStatus(TaskStatus.DONE);
         }
         return inputSubTask;
     }

@@ -1,15 +1,20 @@
 package taskManager;
 
+import utilityClasses.TaskStatus;
+
+import java.util.Objects;
+
 public class Task {
     protected String taskName;
     protected String description;
-    protected String status;
+    protected TaskStatus status;
     protected int identifier;
+
 
     Task(String taskName, String description, int identifier) {
         this.taskName = taskName;
         this.description = description;
-        this.status = "NEW";
+        this.status = TaskStatus.NEW;
         this.identifier = identifier;
     }
 
@@ -29,11 +34,11 @@ public class Task {
         this.description = description;
     }
 
-    public String getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
@@ -43,7 +48,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "taskManager.Task{" +
+        return "Task{" +
                 "taskName='" + taskName + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
@@ -59,16 +64,16 @@ public class Task {
         Task task = (Task) o;
 
         if (identifier != task.identifier) return false;
-        if (!taskName.equals(task.taskName)) return false;
-        if (!description.equals(task.description)) return false;
-        return status.equals(task.status);
+        if (!Objects.equals(taskName, task.taskName)) return false;
+        if (!Objects.equals(description, task.description)) return false;
+        return status == task.status;
     }
 
     @Override
     public int hashCode() {
-        int result = taskName.hashCode();
-        result = 31 * result + description.hashCode();
-        result = 31 * result + status.hashCode();
+        int result = taskName != null ? taskName.hashCode() : 0;
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + identifier;
         return result;
     }

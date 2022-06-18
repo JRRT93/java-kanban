@@ -1,17 +1,18 @@
 package testing;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class InputTaskEpic extends InputTask {
-    HashMap<String, InputSubTask> listOfSubTasks;
+    HashMap<String, InputSubTask> listOfRelatedSubTasks;
 
     InputTaskEpic(String taskName, String description) {
         super(taskName, description);
-        this.listOfSubTasks = new HashMap<>();
+        this.listOfRelatedSubTasks = new HashMap<>();
     }
 
-    public HashMap<String, InputSubTask> getListOfSubTasks() {
-        return listOfSubTasks;
+    public Map<String, InputSubTask> getListOfRelatedSubTasks() {
+        return listOfRelatedSubTasks;
     }
 
     @Override
@@ -21,7 +22,7 @@ public class InputTaskEpic extends InputTask {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 '}' + "\nПеречень подзадач: ";
-        for (HashMap.Entry<String, InputSubTask> entry : listOfSubTasks.entrySet()) {
+        for (HashMap.Entry<String, InputSubTask> entry : listOfRelatedSubTasks.entrySet()) {
             epicString = epicString + "\n" + entry.getValue().toString();
         }
         return epicString;

@@ -3,7 +3,7 @@ package taskManager;
 import java.util.Objects;
 
 public class SubTask extends Task {
-    protected EpicTask relatedEpicTask;
+    private EpicTask relatedEpicTask;
 
     SubTask(String taskName, String description, int identifier, EpicTask relatedEpicTask) {
         super(taskName, description, identifier);

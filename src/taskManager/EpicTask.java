@@ -1,36 +1,33 @@
 package taskManager;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class EpicTask extends Task {
-    protected HashMap<String, SubTask> listOfRelatedSubTasks;
+    protected Map<String, SubTask> listOfRelatedSubTasks;
 
     EpicTask(String taskName, String description, int identifier) {
         super(taskName, description, identifier);
         this.listOfRelatedSubTasks = new HashMap<>();
     }
 
-    public HashMap<String, SubTask> getListOfRelatedSubTasks() {
+    public Map<String, SubTask> getListOfRelatedSubTasks() {
         return listOfRelatedSubTasks;
     }
 
-    public void setListOfRelatedSubTasks(HashMap<String, SubTask> listOfRelatedSubTasks) {
+    public void setListOfRelatedSubTasks(Map<String, SubTask> listOfRelatedSubTasks) {
         this.listOfRelatedSubTasks = listOfRelatedSubTasks;
     }
 
     @Override
     public String toString() {
-        String epicString = "taskManager.EpicTask{" +
+        return  "EpicTask{" +
                 "taskName='" + taskName + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", identifier='" + identifier + '\'' +
-                '}' + "\nПеречень подзадач: ";
-        for (HashMap.Entry<String, SubTask> entry : listOfRelatedSubTasks.entrySet()) {
-            epicString = epicString + "\n" + entry.getValue().toString();
-        }
-        return epicString;
+                ", Количество подзадач='" + listOfRelatedSubTasks.size() + "'}";
     }
 
     @Override
@@ -46,11 +43,8 @@ public class EpicTask extends Task {
 
     @Override
     public int hashCode() {
-        int result = taskName.hashCode();
-        result = 31 * result + description.hashCode();
-        result = 31 * result + status.hashCode();
-        result = 31 * result + identifier;
-        result = 31 * result + listOfRelatedSubTasks.hashCode();
+        int result = super.hashCode();
+        result = 31 * result + (listOfRelatedSubTasks != null ? listOfRelatedSubTasks.hashCode() : 0);
         return result;
     }
 }
