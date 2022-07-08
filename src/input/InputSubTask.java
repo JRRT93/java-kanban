@@ -1,9 +1,9 @@
-package testing;
+package input;
 
 public class InputSubTask extends InputTask {
     InputTaskEpic relatedInputEpicTask;
 
-    InputSubTask(String taskName, String description, InputTaskEpic relatedInputEpicTask) {
+    public InputSubTask(String taskName, String description, InputTaskEpic relatedInputEpicTask) {
         super(taskName, description);
         this.relatedInputEpicTask = relatedInputEpicTask;
     }

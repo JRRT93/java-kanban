@@ -1,11 +1,11 @@
-package taskManager;
+package tasks;
 
 import java.util.Objects;
 
 public class SubTask extends Task {
     private EpicTask relatedEpicTask;
 
-    SubTask(String taskName, String description, int identifier, EpicTask relatedEpicTask) {
+    public SubTask(String taskName, String description, int identifier, EpicTask relatedEpicTask) {
         super(taskName, description, identifier);
         this.relatedEpicTask = relatedEpicTask;
     }

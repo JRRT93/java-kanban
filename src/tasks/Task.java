@@ -1,6 +1,4 @@
-package taskManager;
-
-import utilityClasses.TaskStatus;
+package tasks;
 
 import java.util.Objects;
 
@@ -11,7 +9,7 @@ public class Task {
     protected int identifier;
 
 
-    Task(String taskName, String description, int identifier) {
+    public Task(String taskName, String description, int identifier) {
         this.taskName = taskName;
         this.description = description;
         this.status = TaskStatus.NEW;

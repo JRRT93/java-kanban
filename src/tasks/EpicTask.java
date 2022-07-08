@@ -1,4 +1,4 @@
-package taskManager;
+package tasks;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,7 +7,7 @@ import java.util.Objects;
 public class EpicTask extends Task {
     protected Map<String, SubTask> listOfRelatedSubTasks;
 
-    EpicTask(String taskName, String description, int identifier) {
+    public EpicTask(String taskName, String description, int identifier) {
         super(taskName, description, identifier);
         this.listOfRelatedSubTasks = new HashMap<>();
     }

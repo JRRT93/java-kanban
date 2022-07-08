@@ -1,11 +1,11 @@
-package utilityClasses;
+package managers;
 
-import taskManager.EpicTask;
-import taskManager.SubTask;
-import taskManager.Task;
-import testing.InputSubTask;
-import testing.InputTask;
-import testing.InputTaskEpic;
+import tasks.EpicTask;
+import tasks.SubTask;
+import tasks.Task;
+import input.InputSubTask;
+import input.InputTask;
+import input.InputTaskEpic;
 
 import java.util.Map;
 
@@ -24,10 +24,10 @@ public interface TaskManager {
     Task updateTask(InputTask updatedInputTask);
     EpicTask updateEpicTask(InputTaskEpic updatedInputTaskEpic);
     SubTask updateSubTask(InputSubTask updatedInputSubTask);
-    void removeAllTask();
-    void removeAllEpicTask();
-    void removeAllSubTask();
-    void removeTaskByID(int identifier);
-    void removeEpicTaskByID(int identifier);
-    void removeSubTaskByID(int identifier);
+    void removeAllTask(HistoryManager historyManager);
+    void removeAllEpicTask(HistoryManager historyManager);
+    void removeAllSubTask(HistoryManager historyManager);
+    void removeTaskByID(int identifier, HistoryManager historyManager);
+    void removeEpicTaskByID(int identifier, HistoryManager historyManager);
+    void removeSubTaskByID(int identifier, HistoryManager historyManager);
 }

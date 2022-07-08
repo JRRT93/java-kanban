@@ -1,9 +1,9 @@
-package testing;
+package input;
 
-import taskManager.Task;
-import taskManager.EpicTask;
-import taskManager.SubTask;
-import utilityClasses.TaskStatus;
+import tasks.Task;
+import tasks.EpicTask;
+import tasks.SubTask;
+import tasks.TaskStatus;
 
 import java.util.Map;
 import java.util.Random;

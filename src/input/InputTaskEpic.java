@@ -1,4 +1,4 @@
-package testing;
+package input;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,7 +6,7 @@ import java.util.Map;
 public class InputTaskEpic extends InputTask {
     HashMap<String, InputSubTask> listOfRelatedSubTasks;
 
-    InputTaskEpic(String taskName, String description) {
+    public InputTaskEpic(String taskName, String description) {
         super(taskName, description);
         this.listOfRelatedSubTasks = new HashMap<>();
     }

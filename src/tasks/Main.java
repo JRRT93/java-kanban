@@ -1,18 +1,21 @@
-package taskManager;
+package tasks;
 
-import testing.InputTask; //todo сделать методы для выбора рандомной задачи, подзадачи, эпика и потом их вызывать где надо
-import testing.InputTaskEpic;
-import testing.InputSubTask; //todo в методах проверки продумать и прописать булевы результаты успеха или неуспеха теста
-import testing.InputTaskCreator;
-import utilityClasses.HistoryManager;
-import utilityClasses.Managers;
-import utilityClasses.TaskManager;
+import input.InputTask;
+import input.InputTaskEpic;
+import input.InputSubTask;
+import input.InputTaskCreator;
+import managers.HistoryManager;
+import util.Managers;
+import managers.TaskManager;
 
 import java.util.*;
 
 public class Main {
     public static void main(String[] args) {
+        final long startTime = System.nanoTime();
         runTestingProgram();
+        final long endTime = System.nanoTime();
+        System.out.println(endTime - startTime);
     }
 
     public static void runTestingProgram() {
@@ -30,8 +33,8 @@ public class Main {
         getTaskByIDTest(inMemoryTaskManager, inMemoryHistoryManager);
         updateTasksTest(inMemoryTaskManager, inMemoryHistoryManager, inputTaskCreator);
         getListOfRelatedSubTasksTest(inMemoryTaskManager, inMemoryHistoryManager);
-        removeTaskByID(inMemoryTaskManager);
-        removeAllTasksTest(inMemoryTaskManager);
+        removeTaskByID(inMemoryTaskManager, inMemoryHistoryManager);
+        removeAllTasksTest(inMemoryTaskManager, inMemoryHistoryManager);
     }
 
     public static void createInputObjects(InputTaskCreator inputTaskCreator, List<InputTask> inputTaskList,
@@ -112,13 +115,22 @@ public class Main {
     public static void getTaskByIDTest(TaskManager inMemoryTaskManager, HistoryManager inMemoryHistoryManager) {
         int randomID;
         List<Task> requestedTasks = new ArrayList<>();
+        List<Task> fakeCustomLinked = new ArrayList<>();
+        int uniqueRequests = 0;
 
         System.out.println("\nПОЛУЧЕНИЕ ЗАДАЧИ ПО НОМЕРУ ID");
         randomID = -1;
         while (!inMemoryTaskManager.getListOfTasks().containsKey(randomID)) {
             randomID = pickRandomID(inMemoryTaskManager);
         }
-        Task requestedTask = inMemoryTaskManager.getTaskByID(randomID, inMemoryHistoryManager);
+        Task requestedTask = inMemoryTaskManager.getTaskByID(1, inMemoryHistoryManager);
+        if (!requestedTasks.contains(requestedTask)) {
+            uniqueRequests += 1;
+            fakeCustomLinked.add(requestedTask);
+        } else {
+            fakeCustomLinked.remove(requestedTask);
+            fakeCustomLinked.add(requestedTask);
+        }
         requestedTasks.add(requestedTask);
         System.out.println("СЛУЧАЙНАЯ ОСНОВНАЯ ЗАДАЧА:\n" + requestedTask);
 
@@ -126,50 +138,75 @@ public class Main {
         while (!inMemoryTaskManager.getListOfEpics().containsKey(randomID)) {
             randomID = pickRandomID(inMemoryTaskManager);
         }
-        EpicTask requestedEpicTask = inMemoryTaskManager.getEpicTaskByID(randomID, inMemoryHistoryManager);
+        EpicTask requestedEpicTask = inMemoryTaskManager.getEpicTaskByID(5, inMemoryHistoryManager);
+        if (!requestedTasks.contains(requestedEpicTask)) {
+            uniqueRequests += 1;
+            fakeCustomLinked.add(requestedEpicTask);
+        } else {
+            fakeCustomLinked.remove(requestedEpicTask);
+            fakeCustomLinked.add(requestedEpicTask);
+        }
         requestedTasks.add(requestedEpicTask);
+        for (Map.Entry<String, SubTask> entry : requestedEpicTask.getListOfRelatedSubTasks().entrySet()) {
+            if (!requestedTasks.contains(entry.getValue())) {
+                uniqueRequests += 1;
+                fakeCustomLinked.add(entry.getValue());
+            } else {
+                fakeCustomLinked.remove(entry.getValue());
+                fakeCustomLinked.add(entry.getValue());
+            }
+            requestedTasks.add(entry.getValue());
+        }
         System.out.println("СЛУЧАЙНАЯ ЭПИЧЕСКАЯ ЗАДАЧА:\n" + requestedEpicTask);
 
         randomID = -1;
         while (!inMemoryTaskManager.getListOfSubTasks().containsKey(randomID)) {
             randomID = pickRandomID(inMemoryTaskManager);
         }
-        SubTask requestedSubTask = inMemoryTaskManager.getSubTaskByID(randomID, inMemoryHistoryManager);
+        SubTask requestedSubTask = inMemoryTaskManager.getSubTaskByID(4, inMemoryHistoryManager);
+        if (!requestedTasks.contains(requestedSubTask)) {
+            uniqueRequests += 1;
+            fakeCustomLinked.add(requestedSubTask);
+        } else {
+            fakeCustomLinked.remove(requestedSubTask);
+            fakeCustomLinked.add(requestedSubTask);
+        }
         requestedTasks.add(requestedSubTask);
         System.out.println("СЛУЧАЙНАЯ ПОДЗАДАЧА:\n" + requestedSubTask);
-        requestHistoryTest(requestedTasks, inMemoryHistoryManager);
+        requestHistoryTest(requestedTasks, inMemoryHistoryManager, uniqueRequests, fakeCustomLinked);
 
-        System.out.println("\nВЫЗЫВАЕМ ЕЩЁ 9 ПОДЗАДАЧ В ДОПОЛНЕНИЕ К 3 ВЫЗВАННЫМ РАНЕЕ:");
-        for (int i = 0; i < 9; i++) {
+        System.out.println("\nВЫЗЫВАЕМ ЕЩЁ 3 ПОДЗАДАЧИ В ДОПОЛНЕНИЕ К 3 ВЫЗВАННЫМ РАНЕЕ:");
+        for (int i = 0; i < 3; i++) {
             randomID = -1;
             while (!inMemoryTaskManager.getListOfSubTasks().containsKey(randomID)) {
                 randomID = pickRandomID(inMemoryTaskManager);
             }
             SubTask requested = inMemoryTaskManager.getSubTaskByID(randomID, inMemoryHistoryManager);
-            if (requestedTasks.size() < 10) {
-                requestedTasks.add(requested);
-                System.out.println(requestedTasks.get(i + 3));
+            if (!requestedTasks.contains(requested)) {
+                uniqueRequests += 1;
+                fakeCustomLinked.add(requested);
             } else {
-                requestedTasks.remove(0);
-                requestedTasks.add(requested);
-                System.out.println(requestedTasks.get(9));
+                fakeCustomLinked.remove(requested);
+                fakeCustomLinked.add(requested);
             }
+            requestedTasks.add(requested);
+            System.out.println(requested.getIdentifier());
         }
-        requestHistoryTest(requestedTasks, inMemoryHistoryManager);
+        requestHistoryTest(requestedTasks, inMemoryHistoryManager, uniqueRequests, fakeCustomLinked);
     }
 
-    public static void requestHistoryTest(List<Task> requestedTasks, HistoryManager inMemoryHistoryManager) {
+    public static void requestHistoryTest(List<Task> requestedTasks, HistoryManager inMemoryHistoryManager,
+                                          int uniqueRequests, List<Task> fakeCustomLinked) {
         System.out.println("История просмотра:");
-        List<Task> lastTenTaskRequest = inMemoryHistoryManager.getHistory();
-        for (Task task : lastTenTaskRequest) {
-            System.out.println(task);
-        }
-        if (checkHistoryTaskQuantity(requestedTasks.size(), inMemoryHistoryManager)) {
-            System.out.println("Успех✅✅✅ Количество вызванных задач и количество задач в истории просмотра совпадают.");
+        printHistory(inMemoryHistoryManager);
+        List<Task> history = inMemoryHistoryManager.getHistory();
+
+        if (uniqueRequests == history.size() && fakeCustomLinked.size() == history.size()) {
+            System.out.println("Успех✅✅✅ Количество уникальных вызванных задач и количество задач в истории просмотра совпадают.");
         } else {
             System.out.println("Провал. Количество просмотренных и записанных задач в историю не совпадают");
         }
-        if (requestedTasks.equals(inMemoryHistoryManager.getHistory())) {
+        if (fakeCustomLinked.equals(inMemoryHistoryManager.getHistory())) {
             System.out.println("Успех✅✅✅ Порядок вызванных задач и порядок задач в истории просмотра совпадают.");
         } else {
             System.out.println("Порядок просмотренных и порядок записанных задач в историю не совпадают");
@@ -205,6 +242,8 @@ public class Main {
             System.out.println(entry.getValue());
         }
         System.out.println("ЗАДАЧИ ОБНОВЛЕНЫ✅");
+        System.out.println("ИСТОРИЯ ПОСЛЕ ОБНОВЛЕНИЯ ЗАДАЧ:");
+        printHistory(inMemoryHistoryManager);
     }
 
     public static void getListOfRelatedSubTasksTest(TaskManager inMemoryTaskManager,
@@ -219,17 +258,21 @@ public class Main {
         System.out.println("СПИСОК ВЫВЕДЕН✅");
     }
 
-    public static void removeTaskByID(TaskManager inMemoryTaskManager) {
-        System.out.println("\nУДАЛЕНИЕ ЗАДАЧИ ПО НОМЕРУ ID");
+    public static void removeTaskByID(TaskManager inMemoryTaskManager, HistoryManager historyManager) {
+        System.out.println("\nУДАЛЯЮ ЗАДАЧУ С ID 1");
         int randomID = -1;
         while (!inMemoryTaskManager.getListOfTasks().containsKey(randomID)) {
             randomID = pickRandomID(inMemoryTaskManager);
         }
         System.out.println("ПЕРЕЧЕНЬ ОСНОВНЫХ ЗАДАЧ ДО УДАЛЕНИЯ:");
         printListOfTasks(inMemoryTaskManager.getListOfTasks());
-        inMemoryTaskManager.removeTaskByID(randomID);
+        System.out.println("ИСТОРИЯ ДО УДАЛЕНИЯ:");
+        printHistory(historyManager);
+        inMemoryTaskManager.removeTaskByID(1, historyManager);
         System.out.println("ПЕРЕЧЕНЬ ОСНОВНЫХ ЗАДАЧ ПОСЛЕ:");
         printListOfTasks(inMemoryTaskManager.getListOfTasks());
+        System.out.println("ИСТОРИЯ ПОСЛЕ:");
+        printHistory(historyManager);
 
         randomID = -1;
         while (!inMemoryTaskManager.getListOfEpics().containsKey(randomID)) {
@@ -239,11 +282,15 @@ public class Main {
                 "УДАЛЕНЫ ИЗ ПЕРЕЧНЯ САБСТАСКОВ. ПЕРЕЧЕНЬ ЭПИЧЕСКИХ ЗАДАЧ ДО УДАЛЕНИЯ:");
         printListOfEpicTasks(inMemoryTaskManager.getListOfEpics());
         printListOfSubTasks(inMemoryTaskManager.getListOfSubTasks());
-        inMemoryTaskManager.removeEpicTaskByID(5);
+        System.out.println("ИСТОРИЯ ДО УДАЛЕНИЯ:");
+        printHistory(historyManager);
+        inMemoryTaskManager.removeEpicTaskByID(5, historyManager);
         System.out.println("\nПЕРЕЧЕНЬ ЭПИЧЕСКИХ ЗАДАЧ ПОСЛЕ:");
         printListOfEpicTasks(inMemoryTaskManager.getListOfEpics());
         printListOfSubTasks(inMemoryTaskManager.getListOfSubTasks());
         checkDeletionOfEpicID5(inMemoryTaskManager);
+        System.out.println("ИСТОРИЯ ПОСЛЕ:");
+        printHistory(historyManager);
 
         randomID = -1;
         while (!inMemoryTaskManager.getListOfSubTasks().containsKey(randomID)) {
@@ -254,20 +301,28 @@ public class Main {
         printListOfSubTasks(inMemoryTaskManager.getListOfSubTasks());
         System.out.println("ПЕРЕЧЕНЬ ЭПИЧЕСКИХ ЗАДАЧ ДО:");
         printListOfEpicTasks(inMemoryTaskManager.getListOfEpics());
-        inMemoryTaskManager.removeSubTaskByID(4);
+        System.out.println("ИСТОРИЯ ДО УДАЛЕНИЯ:");
+        printHistory(historyManager);
+        inMemoryTaskManager.removeSubTaskByID(4, historyManager);
         System.out.println("ПЕРЕЧЕНЬ ПОДЗАДАЧ ЗАДАЧ ПОСЛЕ:");
         printListOfSubTasks(inMemoryTaskManager.getListOfSubTasks());
         System.out.println("ПЕРЕЧЕНЬ ЭПИЧЕСКИХ ЗАДАЧ ПОСЛЕ:");
         printListOfEpicTasks(inMemoryTaskManager.getListOfEpics());
         checkDeletionOfSubID4(inMemoryTaskManager);
-
+        System.out.println("ИСТОРИЯ ПОСЛЕ:");
+        printHistory(historyManager);
     }
 
-    public static void removeAllTasksTest(TaskManager inMemoryTaskManager) {
-        System.out.println("\nУДАЛЕНИЕ ВСЕХ ЗАДАЧ");
-        inMemoryTaskManager.removeAllEpicTask();
-        inMemoryTaskManager.removeAllSubTask();
-        inMemoryTaskManager.removeAllTask();
+    public static void removeAllTasksTest(TaskManager inMemoryTaskManager, HistoryManager historyManager) {
+        System.out.println("\nУДАЛЕНИЕ ВСЕХ ЭПИЧЕСКИХ ЗАДАЧ");
+        inMemoryTaskManager.removeAllEpicTask(historyManager);
+        printHistory(historyManager);
+        System.out.println("\nУДАЛЕНИЕ ВСЕХ САБТАСКОВ");
+        inMemoryTaskManager.removeAllSubTask(historyManager);
+        printHistory(historyManager);
+        System.out.println("\nУДАЛЕНИЕ ВСЕХ ОСНОВНЫХ ЗАДАЧ");
+        inMemoryTaskManager.removeAllTask(historyManager);
+        printHistory(historyManager);
         System.out.println(inMemoryTaskManager.getListOfTasks());
         System.out.println(inMemoryTaskManager.getListOfSubTasks());
         System.out.println(inMemoryTaskManager.getListOfEpics());
@@ -359,16 +414,8 @@ public class Main {
         return inputTasksDescriptionList.equals(tasksDescriptionList) && inputTasksNamesList.equals(tasksNamesList);
     }
 
-    public static boolean checkHistoryTaskQuantity(int requestedTasks, HistoryManager historyManager) {
-        if (requestedTasks <= 10) {
-            return requestedTasks == historyManager.getHistory().size();
-        } else {
-            return historyManager.getHistory().size() == 10;
-        }
-    }
-
-    public static void checkInputAgainstObject (List<InputTask> inputTaskList, List<InputSubTask> inputSubTaskList,
-                                                List<InputTaskEpic> inputTaskEpicList, TaskManager inMemoryTaskManager) {
+    public static void checkInputAgainstObject(List<InputTask> inputTaskList, List<InputSubTask> inputSubTaskList,
+                                               List<InputTaskEpic> inputTaskEpicList, TaskManager inMemoryTaskManager) {
         if (checkQuantityOfCreatedTasks(inputTaskList, inputSubTaskList, inputTaskEpicList, inMemoryTaskManager)) {
             System.out.println("Успех✅✅✅ Количество созданных объектов и объектов в TaskManager совпадает.");
         } else {
@@ -404,25 +451,34 @@ public class Main {
         }
     }
 
-    public static void checkDeletionOfEpicID5 (TaskManager inMemoryTaskManager) {
+    public static void checkDeletionOfEpicID5(TaskManager inMemoryTaskManager) {
         boolean isEpicInDaList = inMemoryTaskManager.getListOfEpics().containsKey(5);
         boolean isSubTasksInDaList = inMemoryTaskManager.getListOfSubTasks().size() == 4;
         if (!isEpicInDaList && isSubTasksInDaList) {
             System.out.println("Успех✅✅✅ ТАСК №5 УДАЛЕНА КОРРЕКТНО, ВМЕСТЕ С САБТАСКАМИ");
-        }
-        else {
+        } else {
             System.out.println("Провал✅✅✅ Включай отладчик");
         }
     }
 
-    public static void checkDeletionOfSubID4 (TaskManager inMemoryTaskManager) {
+    public static void checkDeletionOfSubID4(TaskManager inMemoryTaskManager) {
         boolean isEpicInDaList = inMemoryTaskManager.getListOfEpics().containsKey(3);
         boolean isSubTasksInDaList = inMemoryTaskManager.getListOfSubTasks().containsKey(4);
         if (!isEpicInDaList && !isSubTasksInDaList) {
             System.out.println("Успех✅✅✅ САБТАСК №4 УДАЛЕНА КОРРЕКТНО, ВМЕСТЕ С РОДИТЕЛЬСКИМ ЭПИКОМ");
-        }
-        else {
+        } else {
             System.out.println("Провал✅✅✅ Включай отладчик");
+        }
+    }
+
+    public static void printHistory(HistoryManager inMemoryHistoryManager) {
+        List<Task> history = inMemoryHistoryManager.getHistory();
+        if (history.size() != 0) {
+            for (Task task : history) {
+                System.out.println(task.getIdentifier());
+            }
+        } else {
+            System.out.println("ИСТОРИЯ ПУСТА");
         }
     }
 }

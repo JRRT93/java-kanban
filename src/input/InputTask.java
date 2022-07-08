@@ -1,6 +1,6 @@
-package testing;
+package input;
 
-import utilityClasses.TaskStatus;
+import tasks.TaskStatus;
 
 public class InputTask {
     protected String taskName;
@@ -8,7 +8,7 @@ public class InputTask {
     protected TaskStatus status;
     protected int identifier;
 
-    InputTask(String taskName, String description) {
+    public InputTask(String taskName, String description) {
         this.taskName = taskName;
         this.description = description;
     }
