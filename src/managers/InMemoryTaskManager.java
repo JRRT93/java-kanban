@@ -8,16 +8,13 @@ import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStatus;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final Map<Integer, Task> listOfTasks;
-    private final Map<Integer, EpicTask> listOfEpics;
-    private final Map<Integer, SubTask> listOfSubTasks;
-    private int identifier;
+    protected final Map<Integer, Task> listOfTasks;
+    protected final Map<Integer, EpicTask> listOfEpics;
+    protected final Map<Integer, SubTask> listOfSubTasks;
+    protected int identifier;
 
     public InMemoryTaskManager() {
         this.listOfTasks = new HashMap<>();
@@ -114,11 +111,13 @@ public class InMemoryTaskManager implements TaskManager {
         EpicTask updatedEpicTask = listOfEpics.get(updatedInputTaskEpic.getIdentifier());
         updatedEpicTask.setTaskName(updatedInputTaskEpic.getTaskName());
         updatedEpicTask.setDescription(updatedInputTaskEpic.getDescription());
+
         Map<String, SubTask> epicTaskSetList = updatedEpicTask.getListOfRelatedSubTasks();
         epicTaskSetList.clear();
         for (Map.Entry<String, InputSubTask> entry : updatedInputTaskEpic.getListOfRelatedSubTasks().entrySet()) {
             epicTaskSetList.put(entry.getValue().getTaskName(), updateSubTask(entry.getValue()));
         }
+
         updatedEpicTask.setListOfRelatedSubTasks(epicTaskSetList);
         updatedEpicTask.setStatus(defineEpicTaskStatus(updatedEpicTask));
         return updatedEpicTask;
@@ -157,18 +156,28 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeAllEpicTask(HistoryManager historyManager) {
-        if (!listOfEpics.isEmpty())
-            for (Map.Entry<Integer, EpicTask> entry : listOfEpics.entrySet()) {
-                removeEpicTaskByID(entry.getKey(), historyManager);
+        if (!listOfEpics.isEmpty()) {
+            List<Integer> destroy = new ArrayList<>();
+            for (Integer key: listOfEpics.keySet()) {
+                destroy.add(key);
             }
+            for (int i = 0; i < destroy.size(); i++) {
+                removeEpicTaskByID(destroy.get(i), historyManager);
+            }
+        }
     }
 
     @Override
     public void removeAllSubTask(HistoryManager historyManager) {
-        if (!listOfSubTasks.isEmpty())
-            for (Map.Entry<Integer, SubTask> entry : listOfSubTasks.entrySet()) {
-                removeSubTaskByID(entry.getKey(), historyManager);
+        if (!listOfSubTasks.isEmpty()) {
+            List<Integer> destroy = new ArrayList<>();
+            for (Integer key: listOfSubTasks.keySet()) {
+                destroy.add(key);
             }
+            for (int i = 0; i < destroy.size(); i++) {
+                removeSubTaskByID(destroy.get(i), historyManager);
+            }
+        }
     }
 
     @Override

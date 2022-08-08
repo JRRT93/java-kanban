@@ -20,6 +20,10 @@ public class EpicTask extends Task {
         this.listOfRelatedSubTasks = listOfRelatedSubTasks;
     }
 
+    public void addRelatedSubTasks(SubTask subTask) {
+        listOfRelatedSubTasks.put(subTask.getTaskName(), subTask);
+    }
+
     @Override
     public String toString() {
         return  "EpicTask{" +

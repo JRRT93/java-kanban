@@ -1,16 +1,23 @@
 package tasks;
 
+import customExceptions.ManagerSaveException;
 import input.InputTask;
 import input.InputTaskEpic;
 import input.InputSubTask;
 import input.InputTaskCreator;
+import managers.FileBackedTasksManager;
 import managers.HistoryManager;
 import util.Managers;
 import managers.TaskManager;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class Main {
+    private static final Path file = Paths.get("resources\\managerData.csv");
     public static void main(String[] args) {
         final long startTime = System.nanoTime();
         runTestingProgram();
@@ -20,7 +27,7 @@ public class Main {
 
     public static void runTestingProgram() {
         InputTaskCreator inputTaskCreator = new InputTaskCreator();
-        TaskManager inMemoryTaskManager = Managers.getDefault();
+        TaskManager fileBackedManager = Managers.getFileBackedManagerByPath("resources\\managerData.csv");
         HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
         List<InputTask> inputTaskList = new ArrayList<>();
         List<InputTaskEpic> inputTaskEpicList = new ArrayList<>();
@@ -28,13 +35,14 @@ public class Main {
 
 
         createInputObjects(inputTaskCreator, inputTaskList, inputTaskEpicList, inputSubTaskList);
-        createObjects(inMemoryTaskManager, inputTaskList, inputTaskEpicList);
-        getManagerTaskListsTest(inputTaskList, inputSubTaskList, inputTaskEpicList, inMemoryTaskManager);
-        getTaskByIDTest(inMemoryTaskManager, inMemoryHistoryManager);
-        updateTasksTest(inMemoryTaskManager, inMemoryHistoryManager, inputTaskCreator);
-        getListOfRelatedSubTasksTest(inMemoryTaskManager, inMemoryHistoryManager);
-        removeTaskByID(inMemoryTaskManager, inMemoryHistoryManager);
-        removeAllTasksTest(inMemoryTaskManager, inMemoryHistoryManager);
+        createObjects(fileBackedManager, inputTaskList, inputTaskEpicList);
+        getManagerTaskListsTest(inputTaskList, inputSubTaskList, inputTaskEpicList, fileBackedManager);
+        getTaskByIDTest(fileBackedManager, inMemoryHistoryManager);
+        updateTasksTest(fileBackedManager, inMemoryHistoryManager, inputTaskCreator);
+        getListOfRelatedSubTasksTest(fileBackedManager, inMemoryHistoryManager);
+        loadTasksFromFileTest(fileBackedManager, inMemoryHistoryManager);
+        removeTaskByID(fileBackedManager, inMemoryHistoryManager);
+        removeAllTasksTest(fileBackedManager, inMemoryHistoryManager);
     }
 
     public static void createInputObjects(InputTaskCreator inputTaskCreator, List<InputTask> inputTaskList,
@@ -58,7 +66,7 @@ public class Main {
         inputTaskEpicList.add(inputTaskEpic3);
 
         InputSubTask inputSubTask1 = inputTaskCreator.createInputSubTask("Одинокий сабтаск",
-                "Один, совсем один",
+                "Один совсем один",
                 inputTaskEpic1);
         InputSubTask inputSubTask2 = inputTaskCreator.createInputSubTask("Теория", "Пройти до 17.06",
                 inputTaskEpic2);
@@ -70,7 +78,7 @@ public class Main {
         InputSubTask inputSubTask5 = inputTaskCreator.createInputSubTask("Тренер", "Договориться",
                 inputTaskEpic2);
         InputSubTask inputSubTask6 = inputTaskCreator.createInputSubTask("Экипировка",
-                "Плавки, шапочка, очки", inputTaskEpic2);
+                "Плавки-шапочка-очки", inputTaskEpic2);
 
         inputTaskCreator.putSubTaskInEpic(inputSubTask1, inputTaskEpic1);
         inputTaskCreator.putSubTaskInEpic(inputSubTask2, inputTaskEpic2);
@@ -97,6 +105,7 @@ public class Main {
         for (InputTaskEpic inputTaskEpic : inputTaskEpicList) {
             System.out.println(inMemoryTaskManager.createEpicTask(inputTaskEpic));
         }
+        makeFileScreenshot("01 После создания объектов");
         System.out.println("ОСНОВНЫЕ ОБЪЕКТЫ СОЗДАНЫ✅\n");
     }
 
@@ -132,7 +141,8 @@ public class Main {
             fakeCustomLinked.add(requestedTask);
         }
         requestedTasks.add(requestedTask);
-        System.out.println("СЛУЧАЙНАЯ ОСНОВНАЯ ЗАДАЧА:\n" + requestedTask);
+        makeFileScreenshot("02 После вызова задачи");
+        System.out.println("СЛУЧАЙНАЯ ОБЫЧНАЯ ЗАДАЧА:\n" + requestedTask);
 
         randomID = -1;
         while (!inMemoryTaskManager.getListOfEpics().containsKey(randomID)) {
@@ -157,6 +167,8 @@ public class Main {
             }
             requestedTasks.add(entry.getValue());
         }
+
+        makeFileScreenshot("03 После вызова эпика");
         System.out.println("СЛУЧАЙНАЯ ЭПИЧЕСКАЯ ЗАДАЧА:\n" + requestedEpicTask);
 
         randomID = -1;
@@ -172,6 +184,7 @@ public class Main {
             fakeCustomLinked.add(requestedSubTask);
         }
         requestedTasks.add(requestedSubTask);
+        makeFileScreenshot("04 После вызова подзадачи");
         System.out.println("СЛУЧАЙНАЯ ПОДЗАДАЧА:\n" + requestedSubTask);
         requestHistoryTest(requestedTasks, inMemoryHistoryManager, uniqueRequests, fakeCustomLinked);
 
@@ -192,6 +205,7 @@ public class Main {
             requestedTasks.add(requested);
             System.out.println(requested.getIdentifier());
         }
+        makeFileScreenshot("05 После вызова дополнительных 3 подзадач");
         requestHistoryTest(requestedTasks, inMemoryHistoryManager, uniqueRequests, fakeCustomLinked);
     }
 
@@ -225,6 +239,7 @@ public class Main {
         InputTask updatedInputTask = inputTaskCreator.updateTask(taskForUpdate);
         Task updatedTask = inMemoryTaskManager.updateTask(updatedInputTask);
         System.out.println("СЛУЧАЙНАЯ ОСНОВНАЯ ЗАДАЧА ПОСЛЕ:\n" + updatedTask);
+        makeFileScreenshot("06 После обновления обычной задачи");
 
         randomID = -1;
         while (!inMemoryTaskManager.getListOfEpics().containsKey(randomID)) {
@@ -241,6 +256,7 @@ public class Main {
         for (Map.Entry<String, SubTask> entry : updatedEpicTask.getListOfRelatedSubTasks().entrySet()) {
             System.out.println(entry.getValue());
         }
+        makeFileScreenshot("07 После обновления эпика. Перед очисткой");
         System.out.println("ЗАДАЧИ ОБНОВЛЕНЫ✅");
         System.out.println("ИСТОРИЯ ПОСЛЕ ОБНОВЛЕНИЯ ЗАДАЧ:");
         printHistory(inMemoryHistoryManager);
@@ -258,6 +274,30 @@ public class Main {
         System.out.println("СПИСОК ВЫВЕДЕН✅");
     }
 
+    public static void loadTasksFromFileTest(TaskManager inMemoryTaskManager,
+                                        HistoryManager inMemoryHistoryManager) {
+        System.out.println("\nПРОГРАММА ВНЕЗАПНО ОБНУЛИЛАСЬ - ВСЕ МАПЫ С ЗАДАЧАМИ ОЧИЩЕНЫ, ССЫЛОК НА ЗАДАЧИ БОЛЬШЕ НЕТ." +
+                "БУДТО БЫ ЗАНОВО ЗАПУСТИЛИ:");
+        FileBackedTasksManager trueManager = (FileBackedTasksManager) inMemoryTaskManager;
+        inMemoryTaskManager.removeAllTask(inMemoryHistoryManager);
+        inMemoryTaskManager.removeAllEpicTask(inMemoryHistoryManager);
+        trueManager.fakeReload();
+
+        printListOfTasks(inMemoryTaskManager.getListOfTasks());
+        printListOfEpicTasks(inMemoryTaskManager.getListOfEpics());
+        printListOfSubTasks(inMemoryTaskManager.getListOfSubTasks());
+        printHistory(inMemoryHistoryManager);
+        makeFileScreenshot("08 После очистки всего. Перед загрузкой");
+
+        trueManager.restoreTasks(FileBackedTasksManager.loadFromFile(), inMemoryHistoryManager);
+        System.out.println("\nЗАГРУЗИЛИ ПОСЛЕДНИЙ СОХРАНЕННЫЙ ФАЙЛ, ВСЕ ДАННЫЕ ВОССТАНОВЛЕНЫ, ПРОДОЛЖАЕМ ТЕСТИРОВАНИЕ");
+        printListOfTasks(inMemoryTaskManager.getListOfTasks());
+        printListOfEpicTasks(inMemoryTaskManager.getListOfEpics());
+        printListOfSubTasks(inMemoryTaskManager.getListOfSubTasks());
+        inMemoryTaskManager.getTaskByID(1, inMemoryHistoryManager);
+        makeFileScreenshot("09 После загрузки");
+    }
+
     public static void removeTaskByID(TaskManager inMemoryTaskManager, HistoryManager historyManager) {
         System.out.println("\nУДАЛЯЮ ЗАДАЧУ С ID 1");
         int randomID = -1;
@@ -273,6 +313,7 @@ public class Main {
         printListOfTasks(inMemoryTaskManager.getListOfTasks());
         System.out.println("ИСТОРИЯ ПОСЛЕ:");
         printHistory(historyManager);
+        makeFileScreenshot("10 После удаления обычной задачи");
 
         randomID = -1;
         while (!inMemoryTaskManager.getListOfEpics().containsKey(randomID)) {
@@ -291,6 +332,7 @@ public class Main {
         checkDeletionOfEpicID5(inMemoryTaskManager);
         System.out.println("ИСТОРИЯ ПОСЛЕ:");
         printHistory(historyManager);
+        makeFileScreenshot("11 После удаления эпика");
 
         randomID = -1;
         while (!inMemoryTaskManager.getListOfSubTasks().containsKey(randomID)) {
@@ -311,18 +353,21 @@ public class Main {
         checkDeletionOfSubID4(inMemoryTaskManager);
         System.out.println("ИСТОРИЯ ПОСЛЕ:");
         printHistory(historyManager);
+        makeFileScreenshot("12 После удаления сабтаска 4 (это влечет удаление родительского эпика 3)");
     }
 
     public static void removeAllTasksTest(TaskManager inMemoryTaskManager, HistoryManager historyManager) {
         System.out.println("\nУДАЛЕНИЕ ВСЕХ ЭПИЧЕСКИХ ЗАДАЧ");
         inMemoryTaskManager.removeAllEpicTask(historyManager);
         printHistory(historyManager);
+        makeFileScreenshot("13 После удаления всех эпиков");
         System.out.println("\nУДАЛЕНИЕ ВСЕХ САБТАСКОВ");
         inMemoryTaskManager.removeAllSubTask(historyManager);
         printHistory(historyManager);
         System.out.println("\nУДАЛЕНИЕ ВСЕХ ОСНОВНЫХ ЗАДАЧ");
         inMemoryTaskManager.removeAllTask(historyManager);
         printHistory(historyManager);
+        makeFileScreenshot("14 После удаления всех основных задач");
         System.out.println(inMemoryTaskManager.getListOfTasks());
         System.out.println(inMemoryTaskManager.getListOfSubTasks());
         System.out.println(inMemoryTaskManager.getListOfEpics());
@@ -437,17 +482,26 @@ public class Main {
         for (Map.Entry<Integer, Task> entry : map.entrySet()) {
             System.out.println(entry.getValue());
         }
+        if (map.isEmpty()) {
+            System.out.println("Перечень пуст!");
+        }
     }
 
     public static void printListOfEpicTasks(Map<Integer, EpicTask> map) {
         for (Map.Entry<Integer, EpicTask> entry : map.entrySet()) {
             System.out.println(entry.getValue());
         }
+        if (map.isEmpty()) {
+            System.out.println("Перечень пуст!");
+        }
     }
 
     public static void printListOfSubTasks(Map<Integer, SubTask> map) {
         for (Map.Entry<Integer, SubTask> entry : map.entrySet()) {
             System.out.println(entry.getValue());
+        }
+        if (map.isEmpty()) {
+            System.out.println("Перечень пуст!");
         }
     }
 
@@ -479,6 +533,19 @@ public class Main {
             }
         } else {
             System.out.println("ИСТОРИЯ ПУСТА");
+        }
+    }
+
+    public static void makeFileScreenshot(String phaseName) {
+        try {
+            Files.copy(file, file.resolveSibling(phaseName + ".csv"));
+        } catch (IOException exception) {
+            try {
+                Files.deleteIfExists(file.resolveSibling(phaseName + ".csv"));
+                Files.copy(file, file.resolveSibling(phaseName + ".csv"));
+            } catch (IOException e) {
+                throw new ManagerSaveException("Ошибка при работе с файлами, вы нарочно вызвали это исключение");
+            }
         }
     }
 }

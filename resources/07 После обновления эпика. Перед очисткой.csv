@@ -1,0 +1,15 @@
+id,type,name,status,description,epic
+0,Task,Взять чек,NEW,Получить у босса,
+1,Task,UPDATED! Обналичить чек,IN_PROGRESS,UPDATED! Зайти в банк,
+2,Task,Купить молоко,NEW,Зайти в бакалею,
+3,EpicTask,UPDATED! Фальшивый эпик таск,IN_PROGRESS,UPDATED! Внутри всего один сабтаск!,
+5,EpicTask,Завершить спринт 4,NEW,Успеть получить зачёт к жесткому дедлайну,
+8,EpicTask,Занятия в бассейне,NEW,Научиться плавать кролем,
+4,SubTask,UPDATED! Одинокий сабтаск,IN_PROGRESS,UPDATED! Один совсем один,3
+6,SubTask,Теория,NEW,Пройти до 17.06,5
+7,SubTask,Аниме,NEW,Не смотреть,5
+9,SubTask,Тренер,NEW,Договориться,8
+10,SubTask,Бассейн,NEW,Найти подходящий,8
+11,SubTask,Экипировка,NEW,Плавки-шапочка-очки,8
+
+5,6,7,11,1,3,4
