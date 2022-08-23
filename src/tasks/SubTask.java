@@ -1,12 +1,13 @@
 package tasks;
 
-import java.util.Objects;
+import java.time.LocalDateTime;
 
 public class SubTask extends Task {
     private EpicTask relatedEpicTask;
 
-    public SubTask(String taskName, String description, int identifier, EpicTask relatedEpicTask) {
-        super(taskName, description, identifier);
+    public SubTask(String taskName, String description, int identifier, EpicTask relatedEpicTask, long minutes,
+                   LocalDateTime startTime) {
+        super(taskName, description, identifier, minutes, startTime);
         this.relatedEpicTask = relatedEpicTask;
     }
 
@@ -19,6 +20,14 @@ public class SubTask extends Task {
     }
 
     @Override
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+        if (relatedEpicTask != null) {
+            relatedEpicTask.updateEpicTaskStatus();
+        }
+    }
+
+    @Override
     public String toString() {
         return "SubTask{" +
                 "relatedEpicTask='" + relatedEpicTask.getTaskName() + '\'' +
@@ -26,6 +35,7 @@ public class SubTask extends Task {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", identifier=" + identifier +
+                ", startTime=" + startTime.format(formatter) +
                 '}';
     }
 
@@ -37,7 +47,10 @@ public class SubTask extends Task {
 
         SubTask subTask = (SubTask) o;
 
-        return Objects.equals(relatedEpicTask, subTask.relatedEpicTask);
+        return  relatedEpicTask.getIdentifier() == subTask.relatedEpicTask.getIdentifier() &&
+                relatedEpicTask.getTaskName().equals(subTask.relatedEpicTask.getTaskName()) &&
+                relatedEpicTask.getDescription().equals(subTask.relatedEpicTask.getDescription()) &&
+                relatedEpicTask.getStatus().equals(subTask.relatedEpicTask.getStatus());
     }
 
     @Override
@@ -46,4 +59,6 @@ public class SubTask extends Task {
         result = 31 * result + (relatedEpicTask != null ? relatedEpicTask.hashCode() : 0);
         return result;
     }
+
+
 }

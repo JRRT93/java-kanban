@@ -2,15 +2,43 @@ package input;
 
 import tasks.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class InputTask {
     protected String taskName;
     protected String description;
     protected TaskStatus status;
     protected int identifier;
+    protected Duration duration;
+    protected LocalDateTime startTime;
+
+    public InputTask(String taskName, String description, long minutes, LocalDateTime startTime) {
+        this.taskName = taskName;
+        this.description = description;
+        this.duration = Duration.ofMinutes(minutes);
+        this.startTime = startTime;
+    }
 
     public InputTask(String taskName, String description) {
         this.taskName = taskName;
         this.description = description;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public String getTaskName() {

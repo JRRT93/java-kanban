@@ -1,5 +1,8 @@
 package tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -7,13 +10,46 @@ public class Task {
     protected String description;
     protected TaskStatus status;
     protected int identifier;
+    protected Duration duration;
+    protected LocalDateTime startTime;
+    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
 
 
-    public Task(String taskName, String description, int identifier) {
+    public Task(String taskName, String description, int identifier, long minutes, LocalDateTime startTime) {
         this.taskName = taskName;
         this.description = description;
         this.status = TaskStatus.NEW;
         this.identifier = identifier;
+        this.duration = Duration.ofMinutes(minutes);
+        this.startTime = startTime;
+    }
+
+    public Task(String taskName, String description, int identifier) { //todo попробовать выбросить здесь исключение, обработать его
+        //в конструкторе эпике
+        this.taskName = taskName;
+        this.description = description;
+        this.status = TaskStatus.NEW;
+        this.identifier = identifier;
+    }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plus(duration);
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public String getTaskName() {
@@ -51,6 +87,7 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", identifier=" + identifier +
+                ", startTime=" + startTime.format(formatter) +
                 '}';
     }
 

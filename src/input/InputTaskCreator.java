@@ -5,20 +5,21 @@ import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.TaskStatus;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Random;
 
 public class InputTaskCreator {
 
-    public InputTask createInputTask(String taskName, String description) {
-        return new InputTask(taskName, description);
+    public InputTask createInputTask(String taskName, String description, int minutes, LocalDateTime startTime) {
+        return new InputTask(taskName, description, minutes, startTime);
     }
 
     public InputTaskEpic createEpicTask(String taskName, String description) {
         return new InputTaskEpic(taskName, description);
     }
-    public InputSubTask createInputSubTask(String taskName, String description, InputTaskEpic relatedInputTaskEpic) {
-        return new InputSubTask(taskName, description, relatedInputTaskEpic);
+    public InputSubTask createInputSubTask(String taskName, String description, long minutes, LocalDateTime startTime) {
+        return new InputSubTask(taskName, description, minutes, startTime);
     }
 
     public void putSubTaskInEpic(InputSubTask inputSubTask, InputTaskEpic inputTaskEpic) {
@@ -46,15 +47,15 @@ public class InputTaskCreator {
         inputTaskEpic.setTaskName("UPDATED! " + backendEpicTask.getTaskName());
         inputTaskEpic.setDescription("UPDATED! " + backendEpicTask.getDescription());
         for (Map.Entry<String, SubTask> entry : backendEpicTask.getListOfRelatedSubTasks().entrySet()) {
-            inputTaskEpic.listOfRelatedSubTasks.put(entry.getKey(), updateSubTask(entry.getValue(), inputTaskEpic));
+            inputTaskEpic.listOfRelatedSubTasks.put(entry.getKey(), updateSubTask(entry.getValue()));
         }
         return inputTaskEpic;
     }
 
-    public InputSubTask updateSubTask(SubTask backendSubTask, InputTaskEpic relatedInputTaskEpic) {
+    public InputSubTask updateSubTask(SubTask backendSubTask) {
         Random random = new Random();
         InputSubTask inputSubTask = new InputSubTask(backendSubTask.getTaskName(), backendSubTask.getDescription(),
-                relatedInputTaskEpic);
+                backendSubTask.getDuration().toMinutes(), backendSubTask.getStartTime());
         inputSubTask.setIdentifier(backendSubTask.getIdentifier());
         inputSubTask.setTaskName("UPDATED! " + backendSubTask.getTaskName());
         inputSubTask.setDescription("UPDATED! " + backendSubTask.getDescription());

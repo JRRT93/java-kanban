@@ -8,6 +8,7 @@ import input.InputTask;
 import input.InputTaskEpic;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface TaskManager {
     Map<Integer, Task> getListOfTasks();
@@ -17,17 +18,18 @@ public interface TaskManager {
     Task createTask(InputTask frontendInputTask);
     EpicTask createEpicTask(InputTaskEpic frontendTaskEpic);
     SubTask createSubTask(InputSubTask frontendInputSubTask, EpicTask relatedEpicTask);
-    Task getTaskByID(int identifier, HistoryManager historyManager);
-    EpicTask getEpicTaskByID(int identifier, HistoryManager historyManager);
-    SubTask getSubTaskByID(int identifier, HistoryManager historyManager);
-    Map<String, SubTask> getListOfEpicsSubTasks(EpicTask epicTask);
+    Task getTaskByID(int identifier);
+    EpicTask getEpicTaskByID(int identifier);
+    SubTask getSubTaskByID(int identifier);
     Task updateTask(InputTask updatedInputTask);
     EpicTask updateEpicTask(InputTaskEpic updatedInputTaskEpic);
     SubTask updateSubTask(InputSubTask updatedInputSubTask);
-    void removeAllTask(HistoryManager historyManager);
-    void removeAllEpicTask(HistoryManager historyManager);
-    void removeAllSubTask(HistoryManager historyManager);
-    void removeTaskByID(int identifier, HistoryManager historyManager);
-    void removeEpicTaskByID(int identifier, HistoryManager historyManager);
-    void removeSubTaskByID(int identifier, HistoryManager historyManager);
+    void removeAllTask();
+    void removeAllEpicTask();
+    void removeAllSubTask();
+    void removeTaskByID(int identifier);
+    void removeEpicTaskByID(int identifier);
+    void removeSubTaskByID(int identifier);
+    Set<Task> getPrioritizedTasks();
+    HistoryManager getHistoryManager();
 }
