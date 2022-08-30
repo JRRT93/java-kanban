@@ -1,20 +1,24 @@
-package managers;
+package util;
 
 import input.InputSubTask;
 import input.InputTask;
+import input.InputTaskCreator;
 import input.InputTaskEpic;
-import org.junit.jupiter.api.BeforeEach;
-import util.Managers;
-import util.TaskCreatorForTests;
+import managers.TaskManager;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
 
-class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
+public class TaskCreatorForTests {
 
-    @BeforeEach
-    void beforeEach() {
-        taskManager = new InMemoryTaskManager();
+    public static void createTasks(TaskManager taskManager) {
+        InputTaskCreator inputTaskCreator = new InputTaskCreator();
+        List<InputTask> inputTaskList = new ArrayList<>();
+        List<InputTaskEpic> inputTaskEpicList = new ArrayList<>();
+        List<InputSubTask> inputSubTaskList = new ArrayList<>();
+
         InputTask inputTask1 = inputTaskCreator.createInputTask("Взять чек", "Получить у босса",
                 60, LocalDateTime.of(2022, Month.FEBRUARY, 24, 4, 0));
         InputTask inputTask2 = inputTaskCreator.createInputTask("Обналичить чек", "Зайти в банк",

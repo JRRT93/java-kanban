@@ -32,6 +32,8 @@ public class InputTaskCreator {
         inputTask.setIdentifier(backendTask.getIdentifier());
         inputTask.setTaskName("UPDATED! " + backendTask.getTaskName());
         inputTask.setDescription("UPDATED! " + backendTask.getDescription());
+        inputTask.setDuration(backendTask.getDuration());
+        inputTask.setStartTime(backendTask.getStartTime());
         int randomUpdate = random.nextInt(2);
         if (randomUpdate == 0) {
             inputTask.setStatus(TaskStatus.IN_PROGRESS);

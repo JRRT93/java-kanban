@@ -8,6 +8,7 @@ import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStatus;
+import util.DefaultFormatter;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,14 +19,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private static Path mainManagerFile;
     private static String folder;
-    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
 
     public FileBackedTasksManager(String relativePath) {
         Path file = Paths.get(relativePath);
@@ -101,8 +100,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
         if (type.equals("Task")) {
             return String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s", task.getIdentifier(), type, task.getTaskName(),
-                    task.getStatus(), task.getDescription(), task.getStartTime().format(formatter),
-                    task.getEndTime().format(formatter), task.getDuration().toMinutes(), "");
+                    task.getStatus(), task.getDescription(), task.getStartTime().format(DefaultFormatter.FORMATTER),
+                    task.getEndTime().format(DefaultFormatter.FORMATTER), task.getDuration().toMinutes(), "");
         } else if (type.equals("EpicTask")) {
             String startTime;
             String endTime;
@@ -110,12 +109,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             if(task.getStartTime() == null) {
                 startTime = null;
             } else {
-                startTime = task.getStartTime().format(formatter);
+                startTime = task.getStartTime().format(DefaultFormatter.FORMATTER);
             }
             if(task.getEndTime() == null) {
                 endTime = null;
             } else {
-                endTime = task.getEndTime().format(formatter);
+                endTime = task.getEndTime().format(DefaultFormatter.FORMATTER);
             }
             if(task.getDuration() == null) {
                 duration = 0;
@@ -127,8 +126,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         } else {
             SubTask subTask = (SubTask)task;
             return String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s", task.getIdentifier(), type, task.getTaskName(),
-                    task.getStatus(), task.getDescription(), task.getStartTime().format(formatter),
-                    task.getEndTime().format(formatter), task.getDuration().toMinutes(),
+                    task.getStatus(), task.getDescription(), task.getStartTime().format(DefaultFormatter.FORMATTER),
+                    task.getEndTime().format(DefaultFormatter.FORMATTER), task.getDuration().toMinutes(),
                     subTask.getRelatedEpicTask().getIdentifier());
         }
     }
@@ -177,7 +176,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String name = properties[2];
         String description = properties[4];
         int id = Integer.parseInt(properties[0]);
-        LocalDateTime startTime = LocalDateTime.parse(properties[5], formatter);
+        LocalDateTime startTime = LocalDateTime.parse(properties[5], DefaultFormatter.FORMATTER);
         long minutes = Long.parseLong(properties[7]);
 
         Task task = new Task(name, description, id, minutes, startTime);
@@ -198,7 +197,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String name = properties[2];
         String description = properties[4];
         int id = Integer.parseInt(properties[0]);
-        LocalDateTime startTime = LocalDateTime.parse(properties[5], formatter);
+        LocalDateTime startTime = LocalDateTime.parse(properties[5], DefaultFormatter.FORMATTER);
         long minutes = Long.parseLong(properties[7]);
         SubTask subTask = new SubTask(name, description, id, null, minutes, startTime);
         subTask.setStatus(defineLoadedStatus(properties[3]));
@@ -268,7 +267,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public SubTask updateSubTask(InputSubTask updatedInputSubTask) {
+    public SubTask updateSubTask(InputSubTask updatedInputSubTask) throws IllegalArgumentException {
         SubTask subTask = super.updateSubTask(updatedInputSubTask);
         updateMainManagerFile();
         return subTask;

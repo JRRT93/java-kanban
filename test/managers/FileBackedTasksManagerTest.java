@@ -9,6 +9,7 @@ import tasks.EpicTask;
 import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStatus;
+import util.Managers;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -114,7 +115,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
 
     @BeforeEach
     void beforeEach() {
-        taskManager = new FileBackedTasksManager("resources\\tests\\managerData.csv");
+        taskManager = Managers.getFileBackedManagerByPath("resources\\tests\\managerData.csv");
         InputTask inputTask1 = inputTaskCreator.createInputTask("Взять чек", "Получить у босса",
                 60, LocalDateTime.of(2022, Month.FEBRUARY, 24, 4, 0));
         InputTask inputTask2 = inputTaskCreator.createInputTask("Обналичить чек", "Зайти в банк",

@@ -1,8 +1,9 @@
 package tasks;
 
+import util.DefaultFormatter;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -12,7 +13,6 @@ public class Task {
     protected int identifier;
     protected Duration duration;
     protected LocalDateTime startTime;
-    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH:mm");
 
 
     public Task(String taskName, String description, int identifier, long minutes, LocalDateTime startTime) {
@@ -24,8 +24,7 @@ public class Task {
         this.startTime = startTime;
     }
 
-    public Task(String taskName, String description, int identifier) { //todo попробовать выбросить здесь исключение, обработать его
-        //в конструкторе эпике
+    public Task(String taskName, String description, int identifier) {
         this.taskName = taskName;
         this.description = description;
         this.status = TaskStatus.NEW;
@@ -87,7 +86,7 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", identifier=" + identifier +
-                ", startTime=" + startTime.format(formatter) +
+                ", startTime=" + startTime.format(DefaultFormatter.FORMATTER) +
                 '}';
     }
 

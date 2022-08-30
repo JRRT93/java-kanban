@@ -11,7 +11,6 @@ public class InputSubTask extends InputTask {
     @Override
     public String toString() {
         return "SubTask{" +
-                //"relatedEpicTask='" + relatedInputEpicTask.getTaskName() + '\'' +
                 "taskName='" + taskName + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +

@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    protected final Map<Integer, Task> listOfTasks;
-    protected final Map<Integer, EpicTask> listOfEpics;
-    protected final Map<Integer, SubTask> listOfSubTasks;
+    protected Map<Integer, Task> listOfTasks;
+    protected Map<Integer, EpicTask> listOfEpics;
+    protected Map<Integer, SubTask> listOfSubTasks;
     protected final Set<Task> prioritizedTasks;
     protected final HistoryManager historyManager;
     protected int identifier;
@@ -54,18 +54,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Set<Task> getPrioritizedTasks() {
+        prioritizedTasks.clear();
         prioritizedTasks.addAll(listOfTasks.values());
         prioritizedTasks.addAll(listOfSubTasks.values());
         return prioritizedTasks;
-    }
-
-    private void validateTask(Task task) {
-        for (int i = 1; i < getPrioritizedTasks().size(); i++) {
-            LocalDateTime prevFinishTime = getPrioritizedTasks().toArray(new Task[0])[i - 1].getEndTime();
-            LocalDateTime thisStartTime = getPrioritizedTasks().toArray(new Task[0])[i].getStartTime();
-            if (thisStartTime.isBefore(prevFinishTime)) throw new IllegalArgumentException("Выявлено пересечение " +
-                    "дат выполнения задачи с уже существующими задачами");
-        }
     }
 
     @Override
@@ -128,6 +120,8 @@ public class InMemoryTaskManager implements TaskManager {
         updatedTask.setTaskName(updatedInputTask.getTaskName());
         updatedTask.setDescription(updatedInputTask.getDescription());
         updatedTask.setStatus(updatedInputTask.getStatus());
+        updatedTask.setDuration(updatedInputTask.getDuration());
+        updatedTask.setStartTime(updatedInputTask.getStartTime());
         validateTask(updatedTask);
         return updatedTask;
     }
@@ -238,11 +232,21 @@ public class InMemoryTaskManager implements TaskManager {
         Comparator<Task> comparator = (o1, o2) -> {
             if (o1.getStartTime().isAfter(o2.getStartTime())) {
                 return 1;
-            } else if (o1.getStartTime().isBefore(o2.getStartTime())) {
+            } else if (o1.getStartTime().isBefore(o2.getStartTime()) || o1.getStartTime().equals(o2.getStartTime())) {
                 return -1;
             }
             return 0;
         };
         return new TreeSet<>(comparator);
+    }
+
+    private void validateTask(Task task) throws IllegalArgumentException {
+        Set<Task> prioritizedTasks = getPrioritizedTasks();
+        for (int i = 1; i < prioritizedTasks.size(); i++) {
+            LocalDateTime prevFinishTime = getPrioritizedTasks().toArray(new Task[0])[i - 1].getEndTime();
+            LocalDateTime thisStartTime = getPrioritizedTasks().toArray(new Task[0])[i].getStartTime();
+            if (thisStartTime.isBefore(prevFinishTime)) throw new IllegalArgumentException("Выявлено пересечение " +
+                    "дат выполнения задачи с уже существующими задачами");
+        }
     }
 }

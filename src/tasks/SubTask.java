@@ -1,8 +1,12 @@
 package tasks;
 
+import com.google.gson.annotations.Expose;
+import util.DefaultFormatter;
+
 import java.time.LocalDateTime;
 
 public class SubTask extends Task {
+    @Expose
     private EpicTask relatedEpicTask;
 
     public SubTask(String taskName, String description, int identifier, EpicTask relatedEpicTask, long minutes,
@@ -30,12 +34,12 @@ public class SubTask extends Task {
     @Override
     public String toString() {
         return "SubTask{" +
-                "relatedEpicTask='" + relatedEpicTask.getTaskName() + '\'' +
+                "relatedEpicTask='" + relatedEpicTask.getIdentifier() + '\'' +
                 ", taskName='" + taskName + '\'' +
                 ", description='" + description + '\'' +
                 ", status='" + status + '\'' +
                 ", identifier=" + identifier +
-                ", startTime=" + startTime.format(formatter) +
+                ", startTime=" + startTime.format(DefaultFormatter.FORMATTER) +
                 '}';
     }
 
